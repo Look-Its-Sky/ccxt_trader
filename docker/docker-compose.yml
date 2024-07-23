@@ -1,0 +1,50 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    # command: update -enduser -providers protonvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 2828:8000
+      - 8888:8888/tcp 
+      - 8388:8388/tcp
+      - 8388:8388/udp
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    volumes:
+      - ./gluetun:/gluetun
+    environment:
+      - HTTPPROXY=ON
+      - SHADOWSOCKS=ON
+    env_file:
+      - .env
+    restart:
+      unless-stopped 
+
+  bot:
+    network_mode: "service:gluetun"
+    build: .
+    context: Dockerfile-dev
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+        - "3306:3306"
+
+volumes:
+  data:

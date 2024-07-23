@@ -1,0 +1,15 @@
+# git+https://github.com/ethereum/web3.py.git@branch=master
+# dydx-v3-python
+# v4-client-py
+
+git+https://github.com/dydxprotocol/v4-clients.git@main#subdirectory=v4-client-py-v2
+numpy==1.26.4
+pandas==2.2.2
+requests
+technical
+pandas_ta
+ta-lib
+ccxt
+# mariadb
+# numpy
+# pandas

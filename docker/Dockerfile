@@ -1,0 +1,20 @@
+FROM python:3.11 
+COPY . /bot
+
+# Build TA-Lib
+RUN apt update
+RUN apt install build-essential wget -y
+RUN mkdir /build
+RUN wget -O /build/ta-lib.tar.gz http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+WORKDIR /build
+RUN tar -xzf ta-lib.tar.gz
+WORKDIR /build/ta-lib
+RUN ./configure --prefix=/usr
+RUN make -j$(grep processor /proc/cpuinfo | tail -n 1 | awk '{print $3}') || make
+RUN make install 
+
+# Install python deps
+WORKDIR /bot
+RUN pip install -r requirements.txt
+
+CMD ["python", "main.py"]
